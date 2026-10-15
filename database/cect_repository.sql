@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS researches (
     course ENUM('BSIT', 'BSCpE', 'BSCS') NOT NULL,
     research_type ENUM('Thesis', 'Capstone', 'Research Paper', 'Case Study') NOT NULL DEFAULT 'Capstone',
     year_published YEAR NOT NULL,
+    semester ENUM('1st Sem', '2nd Sem') NOT NULL DEFAULT '1st Sem',
     file_name VARCHAR(255) NOT NULL,      -- stored (uniqid) file name
     original_file_name VARCHAR(255) NOT NULL,
     file_size INT UNSIGNED NOT NULL,

@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="login-split-body">
 <div class="login-split">
     <div class="login-left">
-        <img src="../assets/images/cect-logo.jpg" alt="CECT Logo" class="login-left-logo">
+        <img src="../assets/images/LOGO_no-BG.png" alt="CECT Logo" class="login-left-logo">
         <h1 class="login-left-title">CECT Research Repository</h1>
         <p class="login-left-subtitle">Wesleyan University-Philippines<br>College of Engineering, Computer and Technology</p>
     </div>
@@ -90,9 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </button>
             </form>
 
-            <p class="text-center mt-3 mb-0 small">
-                <a href="../index.php"><i class="bi bi-arrow-left"></i> Student? Go to Student Login</a>
-            </p>
         </div>
     </div>
 </div>

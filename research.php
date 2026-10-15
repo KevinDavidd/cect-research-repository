@@ -48,7 +48,7 @@ include __DIR__ . '/includes/header.php';
 
                 <div class="mb-3">
                     <span class="badge bg-cect-gold text-dark mb-1"><?= e($research['course']) ?> &middot; <?= e($research['year_published']) ?></span>
-                    <span class="badge bg-secondary mb-1"><?= e($research['research_type']) ?></span>
+                    <span class="badge bg-secondary mb-1"><?= e($research['semester']) ?></span>
                     <?php foreach ($research['categories'] as $cat): ?>
                         <span class="badge category-badge"><?= e($cat) ?></span>
                     <?php endforeach; ?>
@@ -58,18 +58,9 @@ include __DIR__ . '/includes/header.php';
                     <p class="text-muted small mb-2"><i class="bi bi-person-check"></i> Adviser: <?= e($research['adviser']) ?></p>
                 <?php endif; ?>
 
-                <p class="text-muted small mb-1">
-                    <i class="bi bi-file-earmark-pdf"></i> <?= e($research['original_file_name']) ?>
-                </p>
-                <p class="text-muted small mb-3">
-                    <?= format_file_size((int) $research['file_size']) ?> &middot;
+                <p class="text-muted small mb-0">
                     <i class="bi bi-eye"></i> <?= (int) $research['download_count'] ?> views
                 </p>
-
-                <a href="view_research.php?id=<?= (int) $research['id'] ?>" target="_blank" rel="noopener" class="btn btn-cect w-100">
-                    <i class="bi bi-eye"></i> View Full PDF
-                </a>
-                <p class="text-muted small text-center mt-2 mb-0">View only &mdash; downloading is not available.</p>
             </div>
         </div>
     </div>

@@ -56,7 +56,7 @@ include __DIR__ . '/../includes/admin_header.php';
                                             <i class="bi bi-check-lg"></i> Approve
                                         </button>
                                         <button type="submit" form="reject-<?= (int) $s['id'] ?>" class="btn btn-sm btn-outline-danger"
-                                                onclick="return confirm('Reject and permanently delete this registration?');">
+                                                onclick="return confirm('Reject this registration? The student will be notified if they try to log in.');">
                                             <i class="bi bi-x-lg"></i> Reject
                                         </button>
                                     </td>

@@ -8,7 +8,7 @@
                 <tr>
                     <th>Title</th>
                     <th>Course</th>
-                    <th>Type</th>
+                    <th>Semester</th>
                     <th>Category</th>
                     <th>Year</th>
                     <th>Views</th>
@@ -30,13 +30,14 @@
                                data-adviser="<?= e((string) $r['adviser']) ?>"
                                data-course="<?= e($r['course']) ?>"
                                data-type="<?= e($r['research_type']) ?>"
+                               data-semester="<?= e($r['semester']) ?>"
                                data-year="<?= e((string) $r['year_published']) ?>"
                                data-abstract="<?= e($r['abstract']) ?>">
                                 <?= e($r['title']) ?>
                             </a>
                         </td>
                         <td><span class="badge bg-secondary"><?= e($r['course']) ?></span></td>
-                        <td><span class="badge bg-cect-gold text-dark"><?= e($r['research_type']) ?></span></td>
+                        <td><?= e($r['semester']) ?></td>
                         <td>
                             <?php foreach ($r['categories'] as $cat): ?>
                                 <span class="badge category-badge"><?= e($cat) ?></span>

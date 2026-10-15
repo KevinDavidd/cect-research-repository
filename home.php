@@ -5,7 +5,7 @@ $db = Database::getConnection();
 
 $q            = trim($_GET['q'] ?? '');
 $course       = trim($_GET['course'] ?? '');
-$researchType = trim($_GET['research_type'] ?? '');
+$semester     = trim($_GET['semester'] ?? '');
 $category     = trim($_GET['category'] ?? '');
 $year         = trim($_GET['year'] ?? '');
 $page         = max(1, (int) ($_GET['page'] ?? 1));
@@ -26,9 +26,9 @@ if (in_array($course, ['BSIT', 'BSCpE', 'BSCS'], true)) {
     $where[] = 'course = :course';
     $params['course'] = $course;
 }
-if (in_array($researchType, RESEARCH_TYPES, true)) {
-    $where[] = 'research_type = :research_type';
-    $params['research_type'] = $researchType;
+if (in_array($semester, SEMESTERS, true)) {
+    $where[] = 'semester = :semester';
+    $params['semester'] = $semester;
 }
 if ($year !== '' && ctype_digit($year)) {
     $where[] = 'year_published = :year';
@@ -47,7 +47,7 @@ $total = (int) $countStmt->fetch()['total'];
 $totalPages = max(1, (int) ceil($total / $perPage));
 
 $stmt = $db->prepare(
-    "SELECT id, title, authors, course, research_type, year_published, download_count
+    "SELECT id, title, authors, course, research_type, semester, year_published, download_count
      FROM researches $whereSql
      ORDER BY created_at DESC
      LIMIT :limit OFFSET :offset"
@@ -103,23 +103,23 @@ include __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-3">
                 <select name="course" id="course" class="form-select">
-                    <option value="">All Courses</option>
+                    <option value="">Courses</option>
                     <?php foreach (['BSIT', 'BSCpE', 'BSCS'] as $c): ?>
                         <option value="<?= e($c) ?>" <?= $course === $c ? 'selected' : '' ?>><?= e($c) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="col-md-3">
-                <select name="research_type" id="research_type" class="form-select">
-                    <option value="">All Types</option>
-                    <?php foreach (RESEARCH_TYPES as $t): ?>
-                        <option value="<?= e($t) ?>" <?= $researchType === $t ? 'selected' : '' ?>><?= e($t) ?></option>
+                <select name="semester" id="semester" class="form-select">
+                    <option value="">Semester</option>
+                    <?php foreach (SEMESTERS as $sem): ?>
+                        <option value="<?= e($sem) ?>" <?= $semester === $sem ? 'selected' : '' ?>><?= e($sem) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="col-md-3">
                 <select name="category" id="category" class="form-select">
-                    <option value="">All Categories</option>
+                    <option value="">Categories</option>
                     <?php foreach (RESEARCH_CATEGORIES as $cat): ?>
                         <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e($cat) ?></option>
                     <?php endforeach; ?>
@@ -127,7 +127,7 @@ include __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-3">
                 <select name="year" id="year" class="form-select">
-                    <option value="">All Years</option>
+                    <option value="">S.Y</option>
                     <?php foreach ($years as $y): ?>
                         <option value="<?= e($y) ?>" <?= $year == $y ? 'selected' : '' ?>><?= e($y) ?></option>
                     <?php endforeach; ?>

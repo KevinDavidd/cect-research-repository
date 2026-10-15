@@ -19,11 +19,7 @@ if (!$student) {
     redirect('students.php');
 }
 
-if ($action === 'suspend' && $student['status'] === 'active') {
-    $db->prepare("UPDATE students SET status = 'suspended' WHERE id = :id")->execute(['id' => $id]);
-    log_activity('admin', $_SESSION['admin_id'], $_SESSION['admin_name'], 'Suspend Student', $student['full_name']);
-    flash('success', $student['full_name'] . ' has been suspended.');
-} elseif ($action === 'reactivate' && $student['status'] === 'suspended') {
+if ($action === 'reactivate' && $student['status'] === 'suspended') {
     $db->prepare("UPDATE students SET status = 'active' WHERE id = :id")->execute(['id' => $id]);
     log_activity('admin', $_SESSION['admin_id'], $_SESSION['admin_name'], 'Reactivate Student', $student['full_name']);
     flash('success', $student['full_name'] . ' has been reactivated.');

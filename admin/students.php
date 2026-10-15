@@ -20,7 +20,7 @@ if (in_array($course, ['BSIT', 'BSCpE', 'BSCS'], true)) {
     $where[] = 'course = :course';
     $params['course'] = $course;
 }
-if (in_array($status, ['active', 'suspended', 'rejected'], true)) {
+if (in_array($status, ['active', 'rejected'], true)) {
     $where[] = 'status = :status';
     $params['status'] = $status;
 }
@@ -56,7 +56,7 @@ include __DIR__ . '/../includes/admin_header.php';
             </select>
             <select name="status" id="studentStatus" class="form-select">
                 <option value="">All Statuses</option>
-                <?php foreach (['active', 'suspended', 'rejected'] as $s): ?>
+                <?php foreach (['active', 'rejected'] as $s): ?>
                     <option value="<?= e($s) ?>" <?= $status === $s ? 'selected' : '' ?>><?= e(ucfirst($s)) ?></option>
                 <?php endforeach; ?>
             </select>

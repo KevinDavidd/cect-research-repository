@@ -14,9 +14,9 @@ $stmt->execute(['id' => $id]);
 $student = $stmt->fetch();
 
 if ($student) {
-    $db->prepare('DELETE FROM students WHERE id = :id')->execute(['id' => $id]);
+    $db->prepare("UPDATE students SET status = 'rejected' WHERE id = :id")->execute(['id' => $id]);
     log_activity('admin', $_SESSION['admin_id'], $_SESSION['admin_name'], 'Reject Student', $student['full_name'] . ' (' . $student['student_id'] . ')');
-    flash('success', $student['full_name'] . '\'s registration has been rejected and removed.');
+    flash('success', $student['full_name'] . '\'s registration has been rejected.');
 } else {
     flash('error', 'Student registration not found.');
 }

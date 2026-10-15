@@ -11,6 +11,7 @@ const STUDENT_ID_REGEX = '/^\d{2}-\d{4}-\d{3}$/';
 const INSTITUTIONAL_EMAIL_DOMAIN = '@wesleyan.edu.ph';
 const INSTITUTIONAL_EMAIL_REGEX = '/^[a-z]+\.[a-z]+@wesleyan\.edu\.ph$/i';
 const RESEARCH_TYPES = ['Thesis', 'Capstone'];
+const SEMESTERS = ['1st Sem', '2nd Sem'];
 
 const RESEARCH_CATEGORIES = [
     'Mobile App', 'Web App', 'Desktop App', 'Information System', 'AI', 'Machine Learning',
@@ -247,6 +248,71 @@ function store_research_pdf(array $file): array
         'file_name'          => $storedName,
         'original_file_name' => basename($file['name']),
         'file_size'          => $file['size'],
+    ];
+}
+
+/**
+ * Generates a minimal stand-in PDF (title + abstract text) for research
+ * records added without an uploaded file.
+ */
+function store_placeholder_pdf(string $title, string $abstract): array
+{
+    $escape = fn (string $s): string => str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $s);
+    $wrap = fn (string $text, int $width = 95): array => explode("\n", wordwrap($text, $width, "\n", true));
+
+    $lines = array_merge(
+        $wrap($title, 80),
+        [''],
+        $wrap('Placeholder entry — official PDF not yet uploaded.'),
+        [''],
+        $wrap($abstract)
+    );
+
+    $content = "BT /F1 11 Tf 50 760 Td\n";
+    $first = true;
+    foreach ($lines as $line) {
+        if (!$first) {
+            $content .= "0 -14 Td\n";
+        }
+        $first = false;
+        $content .= '(' . $escape($line) . ") Tj\n";
+    }
+    $content .= 'ET';
+
+    $objects = [
+        1 => '<< /Type /Catalog /Pages 2 0 R >>',
+        2 => '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+        3 => '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>',
+        4 => "<< /Length " . strlen($content) . " >>\nstream\n{$content}\nendstream",
+        5 => '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    ];
+
+    $pdf = "%PDF-1.4\n";
+    $offsets = [];
+    foreach ($objects as $num => $body) {
+        $offsets[$num] = strlen($pdf);
+        $pdf .= "{$num} 0 obj\n{$body}\nendobj\n";
+    }
+    $xrefOffset = strlen($pdf);
+    $count = count($objects) + 1;
+    $pdf .= "xref\n0 {$count}\n0000000000 65535 f \n";
+    for ($i = 1; $i <= count($objects); $i++) {
+        $pdf .= sprintf("%010d 00000 n \n", $offsets[$i]);
+    }
+    $pdf .= "trailer\n<< /Size {$count} /Root 1 0 R >>\nstartxref\n{$xrefOffset}\n%%EOF";
+
+    if (!is_dir(UPLOAD_DIR)) {
+        mkdir(UPLOAD_DIR, 0755, true);
+    }
+
+    $storedName = uniqid('res_', true) . '.pdf';
+    file_put_contents(UPLOAD_DIR . $storedName, $pdf);
+
+    return [
+        'ok'                 => true,
+        'file_name'          => $storedName,
+        'original_file_name' => 'placeholder.pdf',
+        'file_size'          => strlen($pdf),
     ];
 }
 

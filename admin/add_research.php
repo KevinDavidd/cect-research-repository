@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../includes/admin_auth_check.php';
 
 $errors = [];
-$old = ['title' => '', 'abstract' => '', 'authors' => '', 'adviser' => '', 'course' => '', 'research_type' => '', 'year' => date('Y')];
+$old = ['title' => '', 'abstract' => '', 'authors' => '', 'adviser' => '', 'course' => '', 'semester' => '', 'year' => date('Y')];
 $selectedCategories = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['authors']       = trim($_POST['authors'] ?? '');
     $old['adviser']       = trim($_POST['adviser'] ?? '');
     $old['course']        = trim($_POST['course'] ?? '');
-    $old['research_type'] = trim($_POST['research_type'] ?? '');
+    $old['semester']      = trim($_POST['semester'] ?? '');
     $old['year']          = trim($_POST['year'] ?? '');
     $selectedCategories   = array_intersect((array) ($_POST['categories'] ?? []), RESEARCH_CATEGORIES);
 
@@ -21,29 +21,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($old['abstract'] === '') $errors[] = 'Abstract is required.';
     if ($old['authors'] === '') $errors[] = 'Authors are required.';
     if (!in_array($old['course'], ['BSIT', 'BSCpE', 'BSCS'], true)) $errors[] = 'Please select a valid course.';
-    if (!in_array($old['research_type'], RESEARCH_TYPES, true)) $errors[] = 'Please select a valid research type.';
+    if (!in_array($old['semester'], SEMESTERS, true)) $errors[] = 'Please select a valid semester.';
     if (empty($selectedCategories)) $errors[] = 'Please select at least one research category.';
     if (!ctype_digit($old['year']) || $old['year'] < 2000 || $old['year'] > (int) date('Y') + 1) {
         $errors[] = 'Please enter a valid year.';
     }
-    if (empty($_FILES['pdf']) || $_FILES['pdf']['error'] === UPLOAD_ERR_NO_FILE) {
-        $errors[] = 'Please upload the research PDF file.';
-    }
 
     $uploadResult = null;
     if (empty($errors)) {
-        $uploadResult = store_research_pdf($_FILES['pdf']);
-        if (!$uploadResult['ok']) {
-            $errors[] = $uploadResult['error'];
-        }
+        $uploadResult = store_placeholder_pdf($old['title'], $old['abstract']);
     }
 
     if (empty($errors)) {
         $db = Database::getConnection();
         $stmt = $db->prepare(
-            'INSERT INTO researches (title, abstract, authors, adviser, course, research_type, year_published,
+            'INSERT INTO researches (title, abstract, authors, adviser, course, semester, year_published,
                                       file_name, original_file_name, file_size, uploaded_by)
-             VALUES (:title, :abstract, :authors, :adviser, :course, :research_type, :year,
+             VALUES (:title, :abstract, :authors, :adviser, :course, :semester, :year,
                      :file_name, :original_file_name, :file_size, :uploaded_by)'
         );
         $stmt->execute([
@@ -52,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'authors'            => $old['authors'],
             'adviser'            => $old['adviser'] ?: null,
             'course'             => $old['course'],
-            'research_type'      => $old['research_type'],
+            'semester'           => $old['semester'],
             'year'               => $old['year'],
             'file_name'          => $uploadResult['file_name'],
             'original_file_name' => $uploadResult['original_file_name'],
@@ -79,7 +73,7 @@ include __DIR__ . '/../includes/admin_header.php';
             </div>
         <?php endif; ?>
 
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST">
             <?= csrf_field() ?>
             <p class="form-section-title">Basic Information</p>
             <div class="mb-3">
@@ -112,17 +106,17 @@ include __DIR__ . '/../includes/admin_header.php';
                     </select>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <label class="form-label">Research Type</label>
-                    <select name="research_type" class="form-select" required>
-                        <option value="">-- Select --</option>
-                        <?php foreach (RESEARCH_TYPES as $t): ?>
-                            <option value="<?= e($t) ?>" <?= $old['research_type'] === $t ? 'selected' : '' ?>><?= e($t) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-3 mb-3">
                     <label class="form-label">Year Published</label>
                     <input type="number" name="year" class="form-control" value="<?= e((string) $old['year']) ?>" min="2000" max="<?= date('Y') + 1 ?>" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Semester</label>
+                    <select name="semester" class="form-select" required>
+                        <option value="">-- Select --</option>
+                        <?php foreach (SEMESTERS as $sem): ?>
+                            <option value="<?= e($sem) ?>" <?= $old['semester'] === $sem ? 'selected' : '' ?>><?= e($sem) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
             <div class="mb-3">
@@ -142,12 +136,6 @@ include __DIR__ . '/../includes/admin_header.php';
                     </div>
                 </div>
                 <div class="form-text">Select all categories that apply.</div>
-            </div>
-            <p class="form-section-title">Research File</p>
-            <div class="mb-3">
-                <label class="form-label">Research PDF</label>
-                <input type="file" name="pdf" class="form-control" accept="application/pdf" required>
-                <div class="form-text">PDF only, max 20MB.</div>
             </div>
             <button type="submit" class="btn btn-cect"><i class="bi bi-upload"></i> Save Research</button>
         </form>

@@ -19,7 +19,7 @@
                 <div class="card research-card h-100">
                     <div class="card-body d-flex flex-column">
                         <span class="badge bg-cect-gold text-dark mb-2 align-self-start"><?= e($r['course']) ?> &middot; <?= e($r['year_published']) ?></span>
-                        <span class="badge bg-secondary mb-2 align-self-start"><?= e($r['research_type']) ?></span>
+                        <span class="badge bg-secondary mb-2 align-self-start"><?= e($r['semester']) ?></span>
                         <?php if (!empty($r['categories'])): ?>
                             <div class="mb-2">
                                 <?php foreach ($r['categories'] as $cat): ?>

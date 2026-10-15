@@ -34,14 +34,12 @@
                             <?php endif; ?>
                         </td>
                         <td class="text-end">
-                            <?php if ($s['status'] !== 'rejected'): ?>
+                            <?php if ($s['status'] === 'suspended'): ?>
                                 <form method="POST" action="suspend_student.php" class="d-inline">
                                     <?= csrf_field() ?>
                                     <input type="hidden" name="id" value="<?= (int) $s['id'] ?>">
-                                    <input type="hidden" name="action" value="<?= $s['status'] === 'active' ? 'suspend' : 'reactivate' ?>">
-                                    <button type="submit" class="btn btn-sm <?= $s['status'] === 'active' ? 'btn-outline-warning' : 'btn-outline-success' ?>">
-                                        <?= $s['status'] === 'active' ? 'Suspend' : 'Reactivate' ?>
-                                    </button>
+                                    <input type="hidden" name="action" value="reactivate">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">Reactivate</button>
                                 </form>
                             <?php endif; ?>
                         </td>

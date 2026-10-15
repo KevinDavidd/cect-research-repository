@@ -5,7 +5,7 @@ $db = Database::getConnection();
 
 $q            = trim($_GET['q'] ?? '');
 $course       = trim($_GET['course'] ?? '');
-$researchType = trim($_GET['research_type'] ?? '');
+$semester     = trim($_GET['semester'] ?? '');
 $category     = trim($_GET['category'] ?? '');
 
 $where = ["r.status = 'archived'"];
@@ -20,9 +20,9 @@ if (in_array($course, ['BSIT', 'BSCpE', 'BSCS'], true)) {
     $where[] = 'r.course = :course';
     $params['course'] = $course;
 }
-if (in_array($researchType, RESEARCH_TYPES, true)) {
-    $where[] = 'r.research_type = :research_type';
-    $params['research_type'] = $researchType;
+if (in_array($semester, SEMESTERS, true)) {
+    $where[] = 'r.semester = :semester';
+    $params['semester'] = $semester;
 }
 if (in_array($category, RESEARCH_CATEGORIES, true)) {
     $where[] = 'EXISTS (SELECT 1 FROM research_categories rc WHERE rc.research_id = r.id AND rc.category = :category)';
@@ -74,19 +74,19 @@ include __DIR__ . '/../includes/admin_header.php';
         </div>
         <div class="d-flex gap-2">
             <select name="course" id="archivedCourse" class="form-select">
-                <option value="">All Courses</option>
+                <option value="">Courses</option>
                 <?php foreach (['BSIT', 'BSCpE', 'BSCS'] as $c): ?>
                     <option value="<?= e($c) ?>" <?= $course === $c ? 'selected' : '' ?>><?= e($c) ?></option>
                 <?php endforeach; ?>
             </select>
-            <select name="research_type" id="archivedType" class="form-select">
-                <option value="">All Types</option>
-                <?php foreach (RESEARCH_TYPES as $t): ?>
-                    <option value="<?= e($t) ?>" <?= $researchType === $t ? 'selected' : '' ?>><?= e($t) ?></option>
+            <select name="semester" id="archivedSemester" class="form-select">
+                <option value="">Semester</option>
+                <?php foreach (SEMESTERS as $sem): ?>
+                    <option value="<?= e($sem) ?>" <?= $semester === $sem ? 'selected' : '' ?>><?= e($sem) ?></option>
                 <?php endforeach; ?>
             </select>
             <select name="category" id="archivedCategory" class="form-select">
-                <option value="">All Categories</option>
+                <option value="">Categories</option>
                 <?php foreach (RESEARCH_CATEGORIES as $cat): ?>
                     <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e($cat) ?></option>
                 <?php endforeach; ?>
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
         loadResults();
     });
 
-    ['archivedCourse', 'archivedType', 'archivedCategory'].forEach(function (id) {
+    ['archivedCourse', 'archivedSemester', 'archivedCategory'].forEach(function (id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', loadResults);
     });

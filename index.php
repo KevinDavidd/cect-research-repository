@@ -7,7 +7,7 @@ if (!empty($_SESSION['user_role'])) {
     redirect($_SESSION['user_role'] === 'admin' ? 'admin/dashboard.php' : 'home.php');
 }
 
-$error = null;
+$error = null; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_csrf();
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="login-split-body">
 <div class="login-split">
     <div class="login-left">
-        <img src="assets/images/cect-logo.jpg" alt="CECT Logo" class="login-left-logo">
+        <img src="assets/images/LOGO_no-BG.png" alt="CECT Logo" class="login-left-logo">
         <h1 class="login-left-title">CECT Research Repository</h1>
         <p class="login-left-subtitle">Wesleyan University-Philippines<br>College of Engineering, Computer and Technology</p>
     </div>
@@ -107,9 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <p class="text-center mt-3 mb-0 small">
                 Not registered yet? <a href="register.php">Register here</a>
-            </p>
-            <p class="text-center mt-2 mb-0 small">
-                <a href="admin/login.php"><i class="bi bi-shield-lock"></i> Administrator Login</a>
             </p>
         </div>
     </div>

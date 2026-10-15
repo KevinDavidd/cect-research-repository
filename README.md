@@ -117,7 +117,7 @@ Admin logs in → Dashboard → Pending Approvals
 Admin clicks [Approve] or [Reject]
        ↓
 Approve → status = 'active' → student can now log in
-Reject  → registration deleted
+Reject  → status = 'rejected' → student sees rejection notice on next login attempt
        ↓
 Student logs in → redirected to /home.php (Repository)
 ```

@@ -197,6 +197,14 @@ try {
         // Column already exists — nothing to do.
     }
 
+    // Defensive migration for installs created before the semester column existed.
+    try {
+        $pdo->exec("ALTER TABLE researches ADD COLUMN semester ENUM('1st Sem', '2nd Sem') NOT NULL DEFAULT '1st Sem' AFTER year_published");
+        $steps[] = 'Added semester column to existing researches table.';
+    } catch (PDOException $e) {
+        // Column already exists — nothing to do.
+    }
+
     // Defensive migration for installs created before the archive feature existed.
     try {
         $pdo->exec("ALTER TABLE researches

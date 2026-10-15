@@ -5,7 +5,7 @@ $db = Database::getConnection();
 
 $q            = trim($_GET['q'] ?? '');
 $course       = trim($_GET['course'] ?? '');
-$researchType = trim($_GET['research_type'] ?? '');
+$semester     = trim($_GET['semester'] ?? '');
 $category     = trim($_GET['category'] ?? '');
 
 $where = ["status = 'active'"];
@@ -20,9 +20,9 @@ if (in_array($course, ['BSIT', 'BSCpE', 'BSCS'], true)) {
     $where[] = 'course = :course';
     $params['course'] = $course;
 }
-if (in_array($researchType, RESEARCH_TYPES, true)) {
-    $where[] = 'research_type = :research_type';
-    $params['research_type'] = $researchType;
+if (in_array($semester, SEMESTERS, true)) {
+    $where[] = 'semester = :semester';
+    $params['semester'] = $semester;
 }
 if (in_array($category, RESEARCH_CATEGORIES, true)) {
     $where[] = 'EXISTS (SELECT 1 FROM research_categories rc WHERE rc.research_id = researches.id AND rc.category = :category)';
@@ -68,19 +68,19 @@ include __DIR__ . '/../includes/admin_header.php';
         </div>
         <div class="d-flex gap-2">
             <select name="course" id="researchCourse" class="form-select">
-                <option value="">All Courses</option>
+                <option value="">Courses</option>
                 <?php foreach (['BSIT', 'BSCpE', 'BSCS'] as $c): ?>
                     <option value="<?= e($c) ?>" <?= $course === $c ? 'selected' : '' ?>><?= e($c) ?></option>
                 <?php endforeach; ?>
             </select>
-            <select name="research_type" id="researchType" class="form-select">
-                <option value="">All Types</option>
-                <?php foreach (RESEARCH_TYPES as $t): ?>
-                    <option value="<?= e($t) ?>" <?= $researchType === $t ? 'selected' : '' ?>><?= e($t) ?></option>
+            <select name="semester" id="researchSemester" class="form-select">
+                <option value="">Semester</option>
+                <?php foreach (SEMESTERS as $sem): ?>
+                    <option value="<?= e($sem) ?>" <?= $semester === $sem ? 'selected' : '' ?>><?= e($sem) ?></option>
                 <?php endforeach; ?>
             </select>
             <select name="category" id="categoryFilter" class="form-select">
-                <option value="">All Categories</option>
+                <option value="">Categories</option>
                 <?php foreach (RESEARCH_CATEGORIES as $cat): ?>
                     <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e($cat) ?></option>
                 <?php endforeach; ?>
@@ -104,14 +104,12 @@ include __DIR__ . '/../includes/admin_header.php';
             <div class="modal-body">
                 <span class="badge bg-secondary" id="previewCourseYear"></span>
                 <span class="badge bg-cect-gold text-dark" id="previewType"></span>
+                <span class="badge bg-secondary" id="previewSemester"></span>
                 <p class="text-muted mb-1 mt-2"><i class="bi bi-people"></i> <span id="previewAuthors"></span></p>
                 <p class="text-muted mb-3" id="previewAdviserWrap"><i class="bi bi-person-check"></i> Adviser: <span id="previewAdviser"></span></p>
 
                 <h6 class="fw-bold">Abstract</h6>
                 <p id="previewAbstract"></p>
-
-                <h6 class="fw-bold">PDF Preview</h6>
-                <iframe id="previewFrame" src="" style="width: 100%; height: 60vh; border: 1px solid #dee2e6; border-radius: 6px;"></iframe>
             </div>
         </div>
     </div>
@@ -145,7 +143,6 @@ include __DIR__ . '/../includes/admin_header.php';
 document.addEventListener('DOMContentLoaded', function () {
     const previewModalEl = document.getElementById('researchPreviewModal');
     const previewModal = new bootstrap.Modal(previewModalEl);
-    const previewFrame = document.getElementById('previewFrame');
     const resultsContainer = document.getElementById('researchResultsContainer');
     const searchForm = document.getElementById('researchSearchForm');
 
@@ -153,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('previewTitle').textContent = d.title;
         document.getElementById('previewCourseYear').textContent = d.course + ' · ' + d.year;
         document.getElementById('previewType').textContent = d.type;
+        document.getElementById('previewSemester').textContent = d.semester;
         document.getElementById('previewAuthors').textContent = d.authors;
         document.getElementById('previewAbstract').textContent = d.abstract;
 
@@ -164,13 +162,8 @@ document.addEventListener('DOMContentLoaded', function () {
             adviserWrap.style.display = 'none';
         }
 
-        previewFrame.src = 'preview_research.php?id=' + encodeURIComponent(d.id);
         previewModal.show();
     }
-
-    previewModalEl.addEventListener('hidden.bs.modal', function () {
-        previewFrame.src = '';
-    });
 
     const archiveModalEl = document.getElementById('archiveModal');
     const archiveModal = new bootstrap.Modal(archiveModalEl);
@@ -232,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
         loadResults();
     });
 
-    ['researchCourse', 'researchType', 'categoryFilter'].forEach(function (id) {
+    ['researchCourse', 'researchSemester', 'categoryFilter'].forEach(function (id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', loadResults);
     });

@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    ['course', 'research_type', 'category', 'year'].forEach(function (id) {
+    ['course', 'semester', 'category', 'year'].forEach(function (id) {
         const el = document.getElementById(id);
         if (el) {
             el.addEventListener('change', function () {

@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['adviser']  = trim($_POST['adviser'] ?? '');
     $old['course']   = trim($_POST['course'] ?? '');
     $old['research_type'] = trim($_POST['research_type'] ?? '');
+    $old['semester'] = trim($_POST['semester'] ?? '');
     $old['year_published'] = trim($_POST['year'] ?? '');
     $selectedCategories = array_intersect((array) ($_POST['categories'] ?? []), RESEARCH_CATEGORIES);
 
@@ -34,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($old['authors'] === '') $errors[] = 'Authors are required.';
     if (!in_array($old['course'], ['BSIT', 'BSCpE', 'BSCS'], true)) $errors[] = 'Please select a valid course.';
     if (!in_array($old['research_type'], RESEARCH_TYPES, true)) $errors[] = 'Please select a valid research type.';
+    if (!in_array($old['semester'], SEMESTERS, true)) $errors[] = 'Please select a valid semester.';
     if (empty($selectedCategories)) $errors[] = 'Please select at least one research category.';
     if (!ctype_digit((string) $old['year_published']) || $old['year_published'] < 2000 || $old['year_published'] > (int) date('Y') + 1) {
         $errors[] = 'Please enter a valid year.';
@@ -61,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $stmt = $db->prepare(
             'UPDATE researches SET title = :title, abstract = :abstract, authors = :authors, adviser = :adviser,
-                                    course = :course, research_type = :research_type, year_published = :year,
+                                    course = :course, research_type = :research_type, semester = :semester, year_published = :year,
                                     file_name = :file_name, original_file_name = :original_file_name,
                                     file_size = :file_size, updated_at = NOW()
              WHERE id = :id'
@@ -73,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'adviser'            => $old['adviser'] ?: null,
             'course'             => $old['course'],
             'research_type'      => $old['research_type'],
+            'semester'           => $old['semester'],
             'year'               => $old['year_published'],
             'file_name'          => $fileName,
             'original_file_name' => $originalFileName,
@@ -142,6 +145,14 @@ include __DIR__ . '/../includes/admin_header.php';
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Year Published</label>
                     <input type="number" name="year" class="form-control" value="<?= e((string) $old['year_published']) ?>" min="2000" max="<?= date('Y') + 1 ?>" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Semester</label>
+                    <select name="semester" class="form-select" required>
+                        <?php foreach (SEMESTERS as $sem): ?>
+                            <option value="<?= e($sem) ?>" <?= $old['semester'] === $sem ? 'selected' : '' ?>><?= e($sem) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
             <div class="mb-3">
